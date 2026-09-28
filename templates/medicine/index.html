@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IntelliMed - Medicine Detection</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #1f4e79;
+        }
+
+        .upload-box {
+            margin: 25px;
+        }
+
+        button {
+            padding: 12px 25px;
+            background: #1f4e79;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .result {
+            margin-top: 30px;
+        }
+
+        .info {
+            background: #eef5ff;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            text-align: left;
+        }
+
+        .result-image {
+            max-width: 700px;
+            width: 100%;
+            margin-top: 20px;
+            border-radius: 10px;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            text-align: left;
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>💊 IntelliMed Medicine Detection</h1>
+
+    <form action="/medicine" method="POST" enctype="multipart/form-data">
+
+        <div class="upload-box">
+
+            <input
+                type="file"
+                name="image"
+                accept="image/*"
+                required
+            >
+
+        </div>
+
+        <button type="submit">
+            Detect Medicine
+        </button>
+
+    </form>
+
+
+    {% if medicine_name %}
+
+    <div class="result">
+
+        <h2>Detection Result</h2>
+
+        <div class="info">
+
+            <h3>Medicine Classification</h3>
+
+            <p>
+                <strong>Medicine:</strong>
+                {{ medicine_name }}
+            </p>
+
+            <p>
+                <strong>Confidence:</strong>
+                {{ confidence }}%
+            </p>
+
+        </div>
+
+
+        <div class="info">
+
+            <h3>Pills Detected</h3>
+
+            <p>
+                <strong>{{ count }}</strong>
+                pill(s)
+            </p>
+
+        </div>
+
+
+        <div class="info">
+
+            <h3>OCR Text</h3>
+
+            {% if ocr_text %}
+
+            <pre>{{ ocr_text }}</pre>
+
+            {% else %}
+
+            <p>No readable text detected.</p>
+
+            {% endif %}
+
+        </div>
+
+
+        {% if image %}
+
+        <h3>Detection Image</h3>
+
+        <img
+            src="{{ url_for('static', filename='uploads/results/' + image) }}"
+            class="result-image"
+        >
+
+        {% endif %}
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+</body>
+</html>
