@@ -1,31 +1,42 @@
 <!DOCTYPE html>
 <html>
 <head>
+
     <title>IntelliMed - Medicine Detection</title>
 
     <style>
+
         body {
             font-family: Arial, sans-serif;
             background: #f4f7fb;
-            text-align: center;
+            margin: 0;
             padding: 30px;
         }
 
         .container {
-            max-width: 900px;
+            max-width: 950px;
             margin: auto;
             background: white;
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.10);
         }
 
         h1 {
+            text-align: center;
             color: #1f4e79;
         }
 
         .upload-box {
-            margin: 25px;
+            text-align: center;
+            padding: 25px;
+            border: 2px dashed #1f4e79;
+            border-radius: 12px;
+            margin: 25px 0;
+        }
+
+        input[type="file"] {
+            margin: 15px;
         }
 
         button {
@@ -35,46 +46,114 @@
             border: none;
             border-radius: 8px;
             cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #163a5c;
         }
 
         .result {
             margin-top: 30px;
         }
 
-        .info {
+        .medicine-name {
+            text-align: center;
+            font-size: 32px;
+            font-weight: bold;
+            color: #1f4e79;
+            margin: 20px 0;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .card {
             background: #eef5ff;
             padding: 20px;
-            margin: 15px 0;
             border-radius: 10px;
+            text-align: center;
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: #555;
+        }
+
+        .value {
+            font-size: 22px;
+            font-weight: bold;
+            color: #1f4e79;
+        }
+
+        .section {
+            margin-top: 25px;
+        }
+
+        .section h2 {
+            color: #1f4e79;
+        }
+
+        .ocr {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            white-space: pre-wrap;
             text-align: left;
+            line-height: 1.5;
         }
 
         .result-image {
-            max-width: 700px;
+            display: block;
+            max-width: 750px;
             width: 100%;
-            margin-top: 20px;
+            margin: 20px auto;
             border-radius: 10px;
         }
 
-        pre {
-            white-space: pre-wrap;
-            text-align: left;
-            background: #f5f5f5;
-            padding: 15px;
-            border-radius: 8px;
+        .source {
+            text-align: center;
+            color: #666;
+            margin-top: 10px;
         }
+
+        @media (max-width: 700px) {
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
     </style>
+
 </head>
+
 
 <body>
 
 <div class="container">
 
-    <h1>💊 IntelliMed Medicine Detection</h1>
+    <h1>💊 IntelliMed</h1>
 
-    <form action="/medicine" method="POST" enctype="multipart/form-data">
+    <p style="text-align:center;">
+        Intelligent Medicine Detection System
+    </p>
 
-        <div class="upload-box">
+
+    <!-- UPLOAD -->
+
+    <div class="upload-box">
+
+        <form
+            action="/medicine"
+            method="POST"
+            enctype="multipart/form-data"
+        >
 
             <input
                 type="file"
@@ -83,83 +162,136 @@
                 required
             >
 
-        </div>
+            <br>
 
-        <button type="submit">
-            Detect Medicine
-        </button>
+            <button type="submit">
+                🔍 Detect Medicine
+            </button>
 
-    </form>
+        </form>
 
+    </div>
+
+
+    <!-- RESULTS -->
 
     {% if medicine_name %}
 
     <div class="result">
 
-        <h2>Detection Result</h2>
+        <h2 style="text-align:center;">
+            Detection Result
+        </h2>
 
-        <div class="info">
 
-            <h3>Medicine Classification</h3>
+        <!-- MEDICINE NAME -->
 
-            <p>
-                <strong>Medicine:</strong>
-                {{ medicine_name }}
-            </p>
+        <div class="medicine-name">
 
-            <p>
-                <strong>Confidence:</strong>
-                {{ confidence }}%
-            </p>
+            💊 {{ medicine_name }}
 
         </div>
 
 
-        <div class="info">
+        <div class="source">
 
-            <h3>Pills Detected</h3>
-
-            <p>
-                <strong>{{ count }}</strong>
-                pill(s)
-            </p>
+            Detected using: <strong>{{ detection_source }}</strong>
 
         </div>
 
 
-        <div class="info">
+        <!-- INFORMATION CARDS -->
 
-            <h3>OCR Text</h3>
+        <div class="cards">
+
+
+            <div class="card">
+
+                <h3>Medicine</h3>
+
+                <div class="value">
+                    {{ medicine_name }}
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>Confidence</h3>
+
+                <div class="value">
+                    {{ confidence }}%
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>Pills Detected</h3>
+
+                <div class="value">
+                    {{ count }}
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- OCR -->
+
+        <div class="section">
+
+            <h2>📝 OCR Text</h2>
 
             {% if ocr_text %}
 
-            <pre>{{ ocr_text }}</pre>
+            <div class="ocr">
+                {{ ocr_text }}
+            </div>
 
             {% else %}
 
-            <p>No readable text detected.</p>
+            <div class="ocr">
+                No readable text detected.
+            </div>
 
             {% endif %}
 
         </div>
 
 
+        <!-- DETECTION IMAGE -->
+
         {% if image %}
 
-        <h3>Detection Image</h3>
+        <div class="section">
 
-        <img
-            src="{{ url_for('static', filename='uploads/results/' + image) }}"
-            class="result-image"
-        >
+            <h2>📷 Detection Image</h2>
+
+            <img
+                src="{{ url_for(
+                    'static',
+                    filename='uploads/results/' + image
+                ) }}"
+                class="result-image"
+            >
+
+        </div>
 
         {% endif %}
+
 
     </div>
 
     {% endif %}
 
+
 </div>
 
 </body>
+
 </html>
